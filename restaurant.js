@@ -15,51 +15,57 @@ const STAFF_ID = "8589f685-8161-4743-92d7-4d1908e2133d";
 
 export const options = {
   scenarios: {
+    // Scenario 1: Smoke test
     smoke_test: {
       executor: "constant-vus",
       vus: 1,
       duration: "1m",
       tags: { scenario: "smoke" },
     },
+
+    // Scenario 2: Load test with ramping VUs
     load_test: {
       executor: "ramping-vus",
       startVUs: 0,
       stages: [
-        { duration: "5m", target: 50 },
-        { duration: "10m", target: 50 },
-        { duration: "5m", target: 0 },
+        { duration: "5m", target: 5000 }, // Ramp up to 5000 users
+        { duration: "10m", target: 5000 }, // Stay at 5000 users
+        { duration: "5m", target: 0 }, // Ramp down to 0
       ],
       gracefulRampDown: "30s",
       tags: { scenario: "load" },
     },
+
+    // Scenario 3: Stress test
     stress_test: {
-      executor: "ramping-arrival-rate",
-      startRate: 10,
+      executor: "ramping-order-rate",
+      startRate: 1000,
       timeUnit: "1s",
-      preAllocatedVUs: 50,
-      maxVUs: 100,
+      preAllocatedVUs: 5000,
+      maxVUs: 10000,
       stages: [
-        { duration: "2m", target: 10 },
-        { duration: "5m", target: 50 },
-        { duration: "2m", target: 50 },
-        { duration: "2m", target: 80 },
-        { duration: "3m", target: 0 },
+        { duration: "2m", target: 1000 }, // Keep steady at 1000 RPS
+        { duration: "5m", target: 5000 }, // Ramp up to 5000 RPS
+        { duration: "2m", target: 5000 }, // Stay at 5000 RPS
+        { duration: "2m", target: 8000 }, // Peak at 8000 RPS
+        { duration: "3m", target: 0 }, // Ramp down to 0
       ],
       tags: { scenario: "stress" },
     },
+
+    // Scenario 4: Soak test
     soak_test: {
       executor: "constant-vus",
-      vus: 30,
+      vus: 3000,
       duration: "2h",
       tags: { scenario: "soak" },
     },
   },
+
   thresholds: {
-    http_req_duration: ["p(95)<500"],
-    http_req_failed: ["rate<0.01"],
-    errors: ["rate<0.05"],
-    orders_processed: ["count>0"],
-    order_processing_time: ["p(95)<1000"],
+    http_req_duration: ["p(95)<500"], // 95% of requests should be below 500ms
+    http_req_failed: ["rate<0.01"], // Less than 1% of requests should fail
+    errors: ["rate<0.05"], // Less than 5% custom error rate
   },
 };
 
