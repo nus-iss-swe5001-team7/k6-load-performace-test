@@ -24,8 +24,8 @@ export const options = {
       executor: "ramping-vus",
       startVUs: 0,
       stages: [
-        { duration: "5m", target: 50 }, // Ramp up to 50 users
-        { duration: "10m", target: 50 }, // Stay at 50 users
+        { duration: "5m", target: 5000 }, // Ramp up to 5000 users
+        { duration: "10m", target: 5000 }, // Stay at 5000 users
         { duration: "5m", target: 0 }, // Ramp down to 0
       ],
       gracefulRampDown: "30s",
@@ -34,16 +34,16 @@ export const options = {
 
     // Scenario 3: Stress test
     stress_test: {
-      executor: "ramping-arrival-rate",
-      startRate: 10,
+      executor: "ramping-order-rate",
+      startRate: 1000,
       timeUnit: "1s",
-      preAllocatedVUs: 50,
-      maxVUs: 100,
+      preAllocatedVUs: 5000,
+      maxVUs: 10000,
       stages: [
-        { duration: "2m", target: 10 }, // Keep steady at 10 RPS
-        { duration: "5m", target: 50 }, // Ramp up to 50 RPS
-        { duration: "2m", target: 50 }, // Stay at 50 RPS
-        { duration: "2m", target: 80 }, // Peak at 80 RPS
+        { duration: "2m", target: 1000 }, // Keep steady at 1000 RPS
+        { duration: "5m", target: 5000 }, // Ramp up to 5000 RPS
+        { duration: "2m", target: 5000 }, // Stay at 5000 RPS
+        { duration: "2m", target: 8000 }, // Peak at 8000 RPS
         { duration: "3m", target: 0 }, // Ramp down to 0
       ],
       tags: { scenario: "stress" },
@@ -52,7 +52,7 @@ export const options = {
     // Scenario 4: Soak test
     soak_test: {
       executor: "constant-vus",
-      vus: 30,
+      vus: 3000,
       duration: "2h",
       tags: { scenario: "soak" },
     },
